@@ -1,0 +1,40 @@
+# === PyTorch GPU (CUDA 11.8) ===
+torch==2.1.0+cu118
+torchvision==0.16.0+cu118
+torchaudio==2.1.0+cu118
+--extra-index-url https://download.pytorch.org/whl/cu118
+
+# === Transformers and NLP ===
+transformers>=4.30.0
+sentence-transformers>=2.2.2
+nltk>=3.8
+spacy>=3.5
+scikit-learn>=1.2.0
+numpy>=1.23.0
+pandas>=1.5.0
+
+# === Audio Processing ===
+librosa>=0.10.0
+
+# === Computer Vision ===
+opencv-python>=4.7.0
+
+# === Web/API Framework ===
+fastapi>=0.95.0
+uvicorn[standard]>=0.22.0
+
+# === Frontend ===
+streamlit>=1.26.1
+
+# === Speech Processing ===
+SpeechRecognition>=3.8.1
+pydub>=0.25.1
+
+# === Misc ===
+python-dotenv>=1.0.0
+requests>=2.29.0
+matplotlib>=3.7.1
+seaborn>=0.12.2
+
+# === Testing ===
+pytest>=7.3.1
