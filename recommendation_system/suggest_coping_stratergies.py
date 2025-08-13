@@ -6,7 +6,7 @@ from datetime import datetime
 
 # ==== CONFIG ====
 DATA_PATH = os.path.join("datasets", "synthetic_user_journals", "journal_entries_cleaned.csv")
-OUTPUT_DIR = os.path.join("recommendations_system", "outputs")
+OUTPUT_DIR = os.path.join("recommendations_system_output", "outputs")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # ==== STRATEGY LIBRARY ====
