@@ -35,50 +35,92 @@ COPING_STRATEGIES = {
             "Listen to calming or uplifting music."
         ],
         "long_term": [
-            "Maintain a routine that includes social and physical activity.",
+            "Maintain a routine with social and physical activity.",
             "Consider talking to a counselor if sadness persists."
         ]
     },
     "anger": {
         "quick": [
             "Practice 4-7-8 deep breathing.",
-            "Walk away from the trigger for 10 minutes."
+            "Take a short walk or physical activity to release tension."
         ],
         "reflection": [
-            "Write the reasons for your anger without judgement.",
-            "Identify a constructive action to address the cause."
+            "Journal your feelings without editing or judging.",
+            "Identify triggers and healthy responses."
         ],
         "long_term": [
-            "Regular mindfulness or yoga practice.",
-            "Develop assertive communication skills."
+            "Develop assertive communication skills.",
+            "Incorporate mindfulness or yoga."
         ]
     },
     "fear": {
         "quick": [
-            "Ground yourself with the 5-4-3-2-1 technique.",
-            "Focus on slow, steady breathing."
+            "Challenge negative thoughts with evidence.",
+            "Use the 5-4-3-2-1 grounding technique."
         ],
         "reflection": [
-            "Challenge fearful thoughts with evidence.",
-            "Talk about your fear with a trusted person."
+            "Talk through your worries with someone you trust.",
+            "Visualize a calm and safe place."
         ],
         "long_term": [
-            "Gradual exposure to feared situations.",
-            "Track and celebrate small wins against your fears."
+            "Gradually expose yourself to feared situations.",
+            "Practice relaxation exercises daily."
+        ]
+    },
+    "surprise": {
+        "quick": [
+            "Pause and take a mindful breath before reacting.",
+            "Acknowledge your feelings without judgment."
+        ],
+        "reflection": [
+            "Reflect on what surprised you and why.",
+            "Consider how the surprise could be an opportunity."
+        ],
+        "long_term": [
+            "Build adaptability through mindfulness.",
+            "Develop openness to change."
         ]
     },
     "neutral": {
         "quick": [
-            "Check in on your goals for the day.",
-            "Do a 5-minute body stretch."
+            "Do a short mindful breathing exercise.",
+            "Check in with your body’s sensations."
         ],
         "reflection": [
-            "Write 3 small things you could improve today.",
-            "Evaluate your current priorities."
+            "Identify small goals or positive actions for the day.",
+            "Observe your surroundings mindfully."
         ],
         "long_term": [
-            "Cultivate hobbies to enrich daily life.",
-            "Schedule regular wellbeing check-ins."
+            "Maintain balanced routines.",
+            "Engage in hobbies or learning."
+        ]
+    },
+    "apathy": {
+        "quick": [
+            "Move your body for 5 minutes.",
+            "Try something new, even small."
+        ],
+        "reflection": [
+            "Journal about what could spark interest.",
+            "List gratitude items even if small."
+        ],
+        "long_term": [
+            "Schedule regular physical activity.",
+            "Connect socially, even briefly."
+        ]
+    },
+    "disgust": {
+        "quick": [
+            "Shift to a pleasant activity.",
+            "Focus on calming the senses."
+        ],
+        "reflection": [
+            "Write down your feelings and triggers.",
+            "Practice self-compassion."
+        ],
+        "long_term": [
+            "Engage in restorative hobbies.",
+            "Develop acceptance and coping habits."
         ]
     }
 }
@@ -106,7 +148,7 @@ def load_user_history(user_id):
     recent_scores = user_df['mood_score'].tail(7).tolist() if 'mood_score' in user_df.columns else []
     return recent_emotions, recent_scores, user_df
 
-# ==== STRATEGY SUGGESTION ====
+# ==== STRATEGY SUGGESTION WITH FALLBACK ====
 def suggest_strategies(emotion_list, mood_scores):
     emotion_counter = Counter([e for e in emotion_list if e])
     if not emotion_counter:
@@ -126,7 +168,10 @@ def suggest_strategies(emotion_list, mood_scores):
             trend = "stable"
 
     for emo in top_emotions:
-        emo_strats = COPING_STRATEGIES.get(emo, COPING_STRATEGIES.get("neutral", {}))
+        emo_strats = COPING_STRATEGIES.get(emo)
+        if not emo_strats:  # <-- fallback to neutral if missing
+            print(f"[WARN] No strategies found for emotion '{emo}', using neutral instead.")
+            emo_strats = COPING_STRATEGIES.get("neutral")
         strategies_output.append({
             "emotion": emo,
             "trend": trend,
@@ -157,11 +202,10 @@ def save_recommendations(user_id, strategies):
 def main(user_id):
     emotions, scores, user_df = load_user_history(user_id)
     strategies = suggest_strategies(emotions, scores)
-
     if not strategies:
         print(f"No strategies could be generated for {user_id}.")
         return
-    
+
     print(f"\nRecent dominant emotions for {user_id}: {[s['emotion'] for s in strategies]}")
     if strategies[0]["trend"]:
         print(f"Mood trend detected: {strategies[0]['trend']}\n")
@@ -177,5 +221,8 @@ def main(user_id):
     save_recommendations(user_id, strategies)
 
 if __name__ == "__main__":
-    # Example test user
-    main("u001")
+    import argparse
+    parser = argparse.ArgumentParser(description="Suggest coping strategies for a user.")
+    parser.add_argument('user_id', type=str, help='User ID to generate suggestions for')
+    args = parser.parse_args()
+    main(args.user_id)
